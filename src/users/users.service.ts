@@ -1,11 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User, UserDocument } from './schema/user.schema';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const newUser = new this.userModel({ ...createUserDto });
+      console.log(newUser);
+      await newUser.save();
+      return { msg: 'create user succuss' };
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 
   findAll() {
