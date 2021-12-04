@@ -10,7 +10,7 @@ WORKDIR /home/node
 COPY . /home/node
 
 RUN npm i -g pnpm
-RUN pnpm ci \
+RUN pnpm lint \
     && pnpm run build \
     && pnpm prune --production
 
