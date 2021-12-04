@@ -1,30 +1,36 @@
-FROM node:16 AS development
+FROM node:16.8-alpine3.11 as builder
 
-WORKDIR /usr/src/main
 
-COPY package*.json ./
-RUN npm install -g pnpm
-RUN pnpm install glob rimraf
+ENV NODE_ENV build
 
-RUN pnpm install --only=development
 
-COPY . .
+WORKDIR /home/node
 
-RUN pnpm run build
 
-FROM node:16 as production
+COPY . /home/node
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+RUN npm i -g pnpm
+RUN pnpm lint \
+    && pnpm run build \
+    && pnpm prune --production
 
-WORKDIR /usr/src/main
 
-COPY package*.json ./
+# ---
 
-RUN npm install --only=production
 
-COPY . .
+FROM node:16.8-alpine3.11
 
-COPY --from=development /usr/src/main/dist ./dist
 
-CMD ["node", "dist/main"]
+ENV NODE_ENV production
+
+
+USER node
+WORKDIR /home/node
+
+
+COPY --from=builder /home/node/package*.json /home/node/
+COPY --from=builder /home/node/node_modules/ /home/node/node_modules/
+COPY --from=builder /home/node/dist/ /home/node/dist/
+
+
+CMD ["node", "dist/main.js"]
