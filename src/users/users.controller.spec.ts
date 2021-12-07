@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from './schema/user.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
