@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Request,
+  Response,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
@@ -11,9 +18,11 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req) {
+  async login(@Request() req, @Response() res) {
     const { user } = req;
-    return this.authService.login(user);
+    const cookie = this.authService.getCookieWithJwtToken(user);
+    res.setHeader('Set-Cookie', cookie);
+    return res.send(user);
   }
 
   @Post('/signup')
