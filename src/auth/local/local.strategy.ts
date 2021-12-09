@@ -12,7 +12,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
   async validate(username: string, pass: string) {
     const user = await this.usersService.findOneByUsername(username);
-    console.log(user);
     const isPasswordMatching = await bcrypt.compare(pass, user.password);
     if (!isPasswordMatching) {
       throw new UnauthorizedException();

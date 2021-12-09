@@ -7,11 +7,12 @@ import configuration from './config/configuration';
 import databaseConfig from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import jwtConfig from './config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration, databaseConfig],
+      load: [configuration, databaseConfig, jwtConfig],
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
